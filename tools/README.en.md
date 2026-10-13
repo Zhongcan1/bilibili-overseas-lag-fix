@@ -1,8 +1,10 @@
-# tools · three read-only browser console snippets
+# tools · read-only diagnostic and verification tools
 
 [中文](README.md) | **English**
 
-> ⚠️ **Pasting code into the DevTools console gives that code full control over the page.** It is reasonable here only because these three files are short and neither minified nor obfuscated, so you can (and should) read them first. **Never paste console code a stranger sends you.**
+Three browser console snippets plus one Python check that runs on your computer, all read-only.
+
+> ⚠️ **Pasting code into the DevTools console gives that code full control over the page.** It is reasonable here only because the three console snippets below are short and neither minified nor obfuscated, so you can (and should) read them first. **Never paste console code a stranger sends you.**
 > The first time you paste, Chrome blocks it and asks you to type `allow pasting` (follow the exact prompt in your browser's language).
 
 | File | What it does | Network | Changes to the page |
@@ -11,9 +13,13 @@
 | [`cdn-bench.js`](cdn-bench.js) (~270 lines, ~75 of them bilingual comments) | Measures throughput and time to first byte of Bilibili's video nodes for **the current video**: cold data, single connection vs parallel, then prints a verdict | Bilibili video CDN only, no cookies, ~40 MB by default (sized from the node count) | Inserts a hidden blank iframe (to borrow the native fetch) and removes it at the end; result in `window.__cdnBench` |
 | [`play-monitor.js`](play-monitor.js) (~100 lines) | Records startup time, stall count and duration, waits after seeking, forward buffer and dropped frames, for A/B comparisons | **No requests at all** | Only adds event listeners to the `<video>`; result in `window.__pm` |
 
-**Suggested order**: `decode-check.js` first (30 seconds, rules out local playback problems) → if it still stutters, and only on unpopular videos, `cdn-bench.js` (network / CDN) → after installing a speed-up userscript, `play-monitor.js` for an A/B comparison. The full workflow is in [01 Diagnosis](../docs/en/01-diagnosis.md).
+| Local script | What it does | Network | Changes to the browser |
+|---|---|---|---|
+| [`verify-tm-install.py`](verify-tm-install.py) (Python 3.8+, standard library only) | Checks the BTR copy that Tampermonkey **actually stored**: is the code byte-identical to audited commit `0302b34`, is the header edited as in [05](../docs/en/05-safe-install.md), is "Check for updates" off; prints PASS / FAIL | **No network, no downloads** | **None**: opens Tampermonkey's storage files read-only, reads them into memory, writes no files |
 
-All three are written for Chromium-based browsers (Chrome / Edge); other browsers have not been tested. Every message is printed as "中文 / English". The code is released under the MIT License, see [`LICENSE`](../LICENSE).
+**Suggested order**: `decode-check.js` first (30 seconds, rules out local playback problems) → if it still stutters, and only on unpopular videos, `cdn-bench.js` (network / CDN) → after installing BTR per 05, `verify-tm-install.py` to confirm the install → `play-monitor.js` for an A/B comparison. The full workflow is in [01 Diagnosis](../docs/en/01-diagnosis.md).
+
+All three console snippets are written for Chromium-based browsers (Chrome / Edge); other browsers have not been tested. Every message is printed as "中文 / English". The code is released under the MIT License, see [`LICENSE`](../LICENSE).
 
 ---
 
@@ -132,6 +138,89 @@ It only reads the `<video>` element's state and events: no page changes, no requ
 
 ---
 
+## verify-tm-install.py: confirm you installed the audited file
+
+After installing BTR, [05 §2 ⑤](../docs/en/05-safe-install.md) asks you to check the editor line by line. This script does those checks for you, and it looks at the code Tampermonkey **actually stored and will actually run**, not at the version number shown in the UI. Nobody can spot a one-character change in 400 KB of code by eye; SHA-256 can.
+
+**What it checks** (each item PASS / FAIL; every FAIL comes with a fix that points to the exact step in 05)
+
+| Check | Passes when |
+|---|---|
+| Version | Both the header `@version` and Tampermonkey's record say `2026.10.8.1` |
+| Body | All code after `// ==/UserScript==` is byte-identical to audited commit `0302b34` (SHA-256 `793c4bc8…`, 404,509 bytes, built into the script; nothing is fetched). A difference in CRLF line endings only still passes, with a note |
+| No code outside the body | The header holds only `//` comment lines and nothing precedes it (code in either place would run too) |
+| `@updateURL` / `@downloadURL` | Exactly one line each, set to `none` (§2 ③A) |
+| Check for updates | `options.check_for_updates` in Tampermonkey's record is `false` (§2 ③B) |
+| The 4 excludes | passport / pay / account / member are all excluded, either in the header or under "User excludes"; header excludes do not count if "Original excludes" is switched off (§2 ④) |
+| `@run-at` | Exactly one `@run-at document-start` line, and no line contains two `// @` directives (the glued-line problem described in §2 ④) |
+| `@grant` | Exactly the 6 expected entries |
+| Scope | No `@require`, `@resource`, `@connect` or `@include`; `@match` is still only `https://*.bilibili.com/*`; no extra match rules added in Tampermonkey's settings |
+| Rest of the header | Apart from the allowed edits above, identical line by line to the audited header (`@sandbox`, `@inject-into`, `@namespace`, …) |
+
+Also reported, without affecting the verdict: whether the script is enabled; the update URLs in Tampermonkey's record; whether it was installed from the pinned commit URL; when it was last modified; duplicate installs; Tampermonkey BETA.
+
+**Usage** (Python 3.8 or newer; on Windows get it from python.org and use `py` or `python` instead of `python3`)
+
+```
+python3 verify-tm-install.py                 # scan every profile of Chrome / Edge / Brave / Chromium / Opera
+python3 verify-tm-install.py --browser chrome --profile "Default"
+python3 verify-tm-install.py --profile-dir "<profile path>"
+python3 verify-tm-install.py --audited-file bilibili-thread-ripper.user.js   # optional, see below
+python3 verify-tm-install.py --lang en        # English only (zh = Chinese only; default: both)
+python3 verify-tm-install.py --self-test      # test the built-in LevelDB / Snappy readers
+```
+
+- The profile path is the "Profile Path" line on `chrome://version` (Edge: `edge://version`).
+- `--audited-file`: the pinned file saved as suggested in [05 §2 ①](../docs/en/05-safe-install.md). The script checks its SHA-256 first, then uses it to show the line of the first difference if the body does not match.
+- By default it looks for Tampermonkey's 6 official extension IDs ([FAQ Q406](https://www.tampermonkey.net/faq.php?locale=en&q=Q406#Q406): stable, BETA and Legacy from the Chrome / Edge / Opera stores); add others with `--ext-id`. A renamed copy is still found through its `@namespace`; `--name` matches a different name.
+- It works while the browser is open. Exit code: 0 = PASS, 1 = FAIL, 2 = not found or error, so you can put it in your own periodic check.
+
+Sample output (trimmed; this is exactly what "③A done, ③B not done" looks like):
+
+```
+== Chrome · Default · Tampermonkey (Chrome Web Store) ==
+  [PASS] Body (the code that runs) is byte-identical to audited commit 0302b34
+  [PASS] @updateURL none
+  [PASS] @downloadURL none
+  [FAIL] "Check for updates" is still ticked (options.check_for_updates = true)
+         → Fix: script "Settings" tab → untick "Check for updates" → save (05 §2 ③B)
+  [PASS] The 4 sensitive-subdomain excludes are all present
+  [PASS] @run-at document-start is on its own line; no glued lines
+  ...
+  Verdict: FAIL, 1 check(s) failed (see the → Fix lines above).
+```
+
+**What it reads, and how**
+
+Tampermonkey keeps scripts in `chrome.storage.local`, i.e. the `Local Extension Settings/<extension ID>` folder of the browser profile, which is a LevelDB database. The script reads **only that folder**, and it parses the LevelDB format layer by layer instead of searching the files for text:
+
+- **`.log` (write-ahead log)**: 32 KiB blocks, each record with a 7-byte header (CRC32C, length, type). FULL / FIRST / MIDDLE / LAST fragments are joined back into whole records, the CRC is verified, and the WriteBatch inside (sequence number, count, then each key and value) is decoded. A 400 KB script spans a dozen blocks, so a plain text search gets cut by block headers and stitches together the wrong content;
+- **`.ldb` (tables)**: footer, index block and data blocks, with a built-in pure-Python Snappy decompressor and a CRC32C check on every block;
+- **`MANIFEST`**: decides which `.log` / `.ldb` files are still live, so obsolete files are ignored;
+- for each key the record with the highest sequence number wins (deletions included), so you see Tampermonkey's current state, not an old version.
+
+Keys used: `@source#…` (the full script text) and `@meta#…` (Tampermonkey's parsed metadata and this script's settings).
+
+**Privacy and safety**
+
+- **Read-only**: every file is opened for reading only (on Windows, sharing read, write and delete, so the browser is never blocked), read into memory and closed straight away. **No files are written** (temporary files included), nothing goes over the network, nothing is downloaded, the browser is not called.
+- **Only the matched script is printed.** Names, code, settings and stored data of your other scripts are never printed; you only see a count of installed scripts.
+- No script IDs and no local paths are printed. Update URLs are shown as `none`, the pinned commit URL or the main URL; any other https URL is reduced to its host, and local file URLs are not shown. The output is safe to paste into an issue.
+- Cookies are not stored in that folder, and the script does not read them.
+- About 1,100 lines, neither minified nor obfuscated, standard library only; roughly half of it is the LevelDB / Snappy readers and the self-test.
+
+**Limits**
+
+- Tampermonkey in Chromium-based browsers only. Violentmonkey, Firefox and Safari are not supported; for Violentmonkey, check by hand per [05 §3](../docs/en/05-safe-install.md) step 4.
+- It checks the stored record only. Whether BTR is really active on the page and whether the passport page is really excluded still needs the quick in-browser look in 05 §2 ⑤.
+- It does not read Tampermonkey's global settings, so the optional §2 ③C (global update interval) is not checked.
+- Table blocks are supported uncompressed or Snappy-compressed only. Other formats are reported and skipped; if that happens, change something on BTR in Tampermonkey (e.g. disable and re-enable it) so the latest record is written to the `.log`, then re-run.
+- It relies on Tampermonkey's current storage format (keys `@source#` / `@meta#`, the setting `options.check_for_updates`), confirmed with Tampermonkey 5.5.1 on 2026-10-13. A future version that changes the format may make it report "not found" or "could not read the setting".
+- It only knows audited commit `0302b34` (v2026.10.8.1). After upgrading to a newer commit per [05 §4](../docs/en/05-safe-install.md), the body and version checks will FAIL. That is expected: a new version has to be reviewed first.
+- A matching body only means the code is the same as when it was audited. What the audit did and did not cover is in [03](../docs/en/03-btr-security-audit.md).
+
+---
+
 ## Test status (stated plainly)
 
 **cdn-bench.js**
@@ -150,5 +239,17 @@ It only reads the `<video>` element's state and events: no page changes, no requ
 - **Mock environment**: faked WebGL and `mediaCapabilities` answers covering 10 cases: SwiftShader with no hardware decoding for any codec (the case-study situation), full hardware decoding, HEVC-only hardware decoding with the codec setting on default, AVC selected while HEVC is hardware-decoded, no WebGL, no `mediaCapabilities`, a non-Bilibili site, a rejected query plus no `userAgentData`, AVC-only hardware decoding, and an unknown codec-setting value. Every case produced the expected verdict without errors, and the canvas was released.
 - **Real Bilibili page** (2026-10-13, logged out, same browser as above, pasted code identical to this file): results appeared immediately; all six queries reported supported / smooth / powerEfficient = true, the verdict was "✓ Hardware acceleration looks fine" with HEVC or AV1 suggested, and no canvas was left on the page.
 - **Not tested yet**: a browser with hardware acceleration actually turned off. The "software rendering / no hardware decoding" verdict has so far been verified in the mock environment only.
+
+**verify-tm-install.py** (new in this release)
+- **Self-test** (`--self-test`): the standard CRC32C check value, Snappy decompression (including overlapping copies and two kinds of corrupt input), FIRST / MIDDLE / LAST fragments across blocks, WriteBatch decoding, and dropping of damaged fragments.
+- **Simulated cases**: 16 header / settings combinations, all with the expected verdict. Passing: edited as in the guide, CRLF line endings, excludes under "User excludes", a BOM at the start of the file. Failing: "Check for updates" still ticked, setting unreadable, "Original excludes" switched off, an added `@require`, code before the header, a non-comment line inside the header, one changed character in the body, an added `@grant GM_cookie`, extra match rules in the settings, the unedited release file, a changed `@name`. Warning only: script disabled plus an overridden run-at time. One end-to-end run on a synthetic LevelDB log: a renamed copy was found through its `@namespace`, `--audited-file` reported the correct line of the first difference, and another script in the same storage did not appear in the output.
+- **Corrupt input**: random byte overwrites and random truncation of copies of a real storage (`.log`, `.ldb`, `MANIFEST`), 60 rounds each, plus 300 random Snappy inputs: no crashes; damaged parts were skipped and counted.
+- **Real storage** (2026-10-13, Windows, Chrome, Tampermonkey 5.5.1, browser open):
+  - Current storage: 1 `.log` and 1 `.ldb` read in under a second. Body byte-identical; `@updateURL` / `@downloadURL` set to `none`; the 4 excludes, `@run-at`, the 6 `@grant`, scope and the rest of the header all passed; the only FAIL was "Check for updates" still being ticked. That matches the observation recorded in [05 §2 ③B](../docs/en/05-safe-install.md): editing the header alone does not switch that setting off.
+  - A copy of the same storage taken earlier that day (right after the header edit): the tool flagged the glued line described in §2 ④, `// @exclude      https://member.bilibili.com/*// @run-at       document-start`, and reported the member exclude and `@run-at` as missing because of it.
+  - Tables: all 313 data blocks passed the CRC check and decompressed, and the keys came out in LevelDB's sort order.
+  - A profile with Tampermonkey installed but no scripts: reported "BTR was not found", exit code 2.
+  - Run on Python 3.11, 3.12 and 3.13; syntax checked against the 3.8 grammar.
+- **Not tested yet**: macOS and Linux; Edge, Brave, Opera or Chromium with BTR actually installed; Tampermonkey BETA; actually running on Python 3.8–3.10.
 
 If something fails in your browser, please open an issue with a console screenshot (remove your GPU model or anything else you do not want public first).

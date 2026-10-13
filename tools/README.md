@@ -1,8 +1,10 @@
-# tools · 三个只读的浏览器控制台片段
+# tools · 只读的诊断与校验工具
 
 **中文** | [English](README.en.md)
 
-> ⚠️ **往开发者工具控制台里粘贴代码，等于把这个网页的全部权限交给这段代码。** 这里的三个文件都很短、没有压缩或混淆，你可以（也应该）先从头读一遍再用。**陌生人发来的控制台代码一律不要粘贴。**
+三个浏览器控制台片段，加一个在本机运行的 Python 校验脚本，全部只读。
+
+> ⚠️ **往开发者工具控制台里粘贴代码，等于把这个网页的全部权限交给这段代码。** 下面三个控制台片段都很短、没有压缩或混淆，你可以（也应该）先从头读一遍再用。**陌生人发来的控制台代码一律不要粘贴。**
 > 第一次粘贴时，Chrome 会拦下并提示你先手动输入 `allow pasting`（中文界面可能是"允许粘贴"，以提示为准）。
 
 | 文件 | 干什么 | 网络 | 对页面的改动 |
@@ -11,9 +13,13 @@
 | [`cdn-bench.js`](cdn-bench.js)（约 270 行，其中约 75 行是中英注释） | 测各个 B 站视频节点对**当前视频**的吞吐与首字节时间：冷数据、单连接 vs 并行，最后给出"结论提示" | 只连 B 站视频 CDN，不带 Cookie，默认约 40 MB（按节点数自动计算） | 临时插入一个隐藏的空白 iframe（借原生 fetch），结束即删；结果放在 `window.__cdnBench` |
 | [`play-monitor.js`](play-monitor.js)（约 100 行） | 记录首帧时间、卡顿次数和时长、拖动后的等待、前方缓冲、丢帧，用于 A/B 对比 | **不发任何请求** | 只给 `<video>` 加事件监听；结果放在 `window.__pm` |
 
-**建议顺序**：先 `decode-check.js`（30 秒，排除本机播放问题）→ 还卡、而且只有冷门视频卡，再 `cdn-bench.js`（排查网络 / CDN）→ 装了加速脚本后用 `play-monitor.js` 做 A/B 对比。整体流程见 [01 诊断](../docs/zh-CN/01-diagnosis.md)。
+| 本机脚本 | 干什么 | 网络 | 对浏览器的改动 |
+|---|---|---|---|
+| [`verify-tm-install.py`](verify-tm-install.py)（Python 3.8+，只用标准库） | 核对 Tampermonkey **实际存下来**的 BTR：正文是否与审计提交 `0302b34` 逐字节一致、文件头是否按 [05](../docs/zh-CN/05-safe-install.md) 改好、「检查更新」是否已关闭，最后给出 PASS / FAIL | **不联网、不下载** | **无**：只读打开 Tampermonkey 的存储文件，读进内存，不写任何文件 |
 
-三个文件都按 Chromium 内核浏览器（Chrome / Edge）写的；其他浏览器没有测过。所有提示都是"中文 / English"双语。代码以 MIT 许可发布，见 [`LICENSE`](../LICENSE)。
+**建议顺序**：先 `decode-check.js`（30 秒，排除本机播放问题）→ 还卡、而且只有冷门视频卡，再 `cdn-bench.js`（排查网络 / CDN）→ 按 05 装好 BTR 后用 `verify-tm-install.py` 确认装对了 → 用 `play-monitor.js` 做 A/B 对比。整体流程见 [01 诊断](../docs/zh-CN/01-diagnosis.md)。
+
+三个控制台片段都按 Chromium 内核浏览器（Chrome / Edge）写的；其他浏览器没有测过。所有提示都是"中文 / English"双语。代码以 MIT 许可发布，见 [`LICENSE`](../LICENSE)。
 
 ---
 
@@ -130,6 +136,89 @@
 
 ---
 
+## verify-tm-install.py：确认装的就是审计过的那份
+
+装好 BTR 以后，[05 §2 ⑤](../docs/zh-CN/05-safe-install.md) 要你在编辑器里逐行核对。这个脚本把这些核对自动做一遍，而且看的是 Tampermonkey **实际存下来、实际会运行**的那份代码，不是界面上显示的版本号。几十万字节的代码，人眼比不出"改了一个字符"，SHA-256 可以。
+
+**它检查什么**（每项 PASS / FAIL；FAIL 附修复提示，指向 05 的具体步骤）
+
+| 检查 | 通过条件 |
+|---|---|
+| 版本 | 文件头 `@version` 和 Tampermonkey 记录里的版本都是 `2026.10.8.1` |
+| 正文 | `// ==/UserScript==` 之后的全部代码与审计提交 `0302b34` 逐字节一致（SHA-256 `793c4bc8…`，404,509 字节，写在脚本里，运行时不联网）。只差 CRLF 换行也算通过，会注明 |
+| 文件头外无代码 | 文件头里只有 `//` 注释行，文件头前面没有任何内容（这两处的代码同样会被执行） |
+| `@updateURL` / `@downloadURL` | 各有且只有一行，值为 `none`（§2 ③A） |
+| 检查更新 | Tampermonkey 记录里的 `options.check_for_updates` 为 `false`（§2 ③B） |
+| 4 条排除规则 | passport / pay / account / member 四个子域都被排除；写在文件头或「用户排除」里都算，但「原始排除规则」被关掉时不算（§2 ④） |
+| `@run-at` | 只有一行 `@run-at document-start`，而且没有任何一行里出现两个 `// @`（§2 ④ 说的粘行问题） |
+| `@grant` | 正好是那 6 项 |
+| 范围 | 没有 `@require`、`@resource`、`@connect`、`@include`；`@match` 仍只有 `https://*.bilibili.com/*`；Tampermonkey 设置里也没有另加匹配规则 |
+| 其余文件头 | 除了上面允许的改动，与审计版本逐行一致（`@sandbox`、`@inject-into`、`@namespace` 等） |
+
+另外列出、但不影响结论的：脚本是否启用；Tampermonkey 内部记录的更新地址；安装来源是不是钉提交地址；最后修改时间；有没有装了多份；是不是 BETA 版。
+
+**用法**（Python 3.8 或更新版本；Windows 可从 python.org 安装，下面的 `python3` 在 Windows 上换成 `py` 或 `python`）
+
+```
+python3 verify-tm-install.py                 # 自动查找 Chrome / Edge / Brave / Chromium / Opera 的所有个人资料
+python3 verify-tm-install.py --browser chrome --profile "Default"
+python3 verify-tm-install.py --profile-dir "<个人资料路径>"
+python3 verify-tm-install.py --audited-file bilibili-thread-ripper.user.js   # 可选，见下
+python3 verify-tm-install.py --lang zh        # 只显示中文（en = 只显示英文；默认双语）
+python3 verify-tm-install.py --self-test      # 自检内置的 LevelDB / Snappy 读取器
+```
+
+- 个人资料路径在 `chrome://version`（Edge：`edge://version`）的「个人资料路径」一行。
+- `--audited-file`：按 [05 §2 ①](../docs/zh-CN/05-safe-install.md) 的提示另存下来的钉版本文件。脚本先核对它的 SHA-256，正文不一致时再用它指出第一处差异在第几行。
+- 默认找 Tampermonkey 官方的 6 个扩展 ID（[FAQ Q406](https://www.tampermonkey.net/faq.php?locale=en&q=Q406#Q406)：正式版、BETA、Legacy，Chrome / Edge / Opera 商店）；其他 ID 用 `--ext-id` 补充。脚本名称改过的话，也会按 `@namespace` 找到；`--name` 可以指定别的名称。
+- 浏览器开着也能跑。退出码：0 = PASS，1 = FAIL，2 = 没找到或出错，方便写进自己的定期检查。
+
+输出示例（节选；这正是「只做了 ③A、没做 ③B」时的样子）：
+
+```
+== Chrome · Default · Tampermonkey (Chrome Web Store) ==
+  [PASS] 正文（实际运行的代码）与审计提交 0302b34 逐字节一致
+  [PASS] @updateURL none
+  [PASS] @downloadURL none
+  [FAIL] 「检查更新」仍是勾选状态（options.check_for_updates = true）
+         → 修复：脚本的「设置」标签页 → 取消勾选「检查更新」→ 保存（05 §2 ③B）
+  [PASS] 4 条敏感子域排除规则都在
+  [PASS] @run-at document-start 独占一行，没有粘连的行
+  ...
+  结论：FAIL，1 项未通过（见上方 → 修复）。
+```
+
+**它读什么、怎么读**
+
+Tampermonkey 把脚本存在 `chrome.storage.local` 里，也就是个人资料下的 `Local Extension Settings/<扩展 ID>` 文件夹，底层是 LevelDB。脚本**只读这一个文件夹**，并且按 LevelDB 的格式逐层解析，而不是在文件里搜文本：
+
+- **`.log`（预写日志）**：按 32 KiB 一块、每条记录 7 字节头（CRC32C、长度、类型），把 FULL / FIRST / MIDDLE / LAST 分片拼回完整记录，校验 CRC，再解析里面的 WriteBatch（序列号、条数、逐条的键和值）。一个 40 万字节的脚本会跨十几个块，直接搜字符串会被块头切断、拼出错误的内容；
+- **`.ldb`（表文件）**：解析 footer、索引块和数据块，内置纯 Python 的 Snappy 解压，逐块校验 CRC32C；
+- **`MANIFEST`**：确定哪些 `.log` / `.ldb` 仍然有效，忽略已经过时的文件；
+- 同一个键以序列号最大的记录为准（删除也算），所以看到的是 Tampermonkey 此刻的状态，而不是某个历史版本。
+
+用到的键：`@source#…`（脚本全文）和 `@meta#…`（Tampermonkey 解析出的元数据和这个脚本的设置）。
+
+**隐私与安全**
+
+- **只读**：每个文件用只读方式打开（Windows 上允许其他程序同时读、写、删除，不会挡住浏览器），读进内存后立即关闭。**不写任何文件**（包括临时文件），不联网，不下载，不调用浏览器。
+- **只打印匹配到的那个脚本**。其他脚本的名称、代码、设置和存储的数据都不打印，只报一个"共 N 个已安装脚本"的数字。
+- 不打印脚本 ID 和本机路径。更新地址只显示 `none`、钉提交地址或 main 地址，其他 https 地址只显示域名，本地文件地址不显示。所以输出可以直接贴进 issue。
+- Cookie 不在这个文件夹里，脚本也不会去读。
+- 代码约 1,100 行，没有压缩或混淆，只依赖 Python 标准库；其中约一半是 LevelDB / Snappy 读取器和自检。
+
+**局限**
+
+- 只支持 Chromium 内核浏览器里的 Tampermonkey。Violentmonkey、Firefox、Safari 不支持；Violentmonkey 请按 [05 §3](../docs/zh-CN/05-safe-install.md) 第 4 步手动核对。
+- 只核对存储里的记录。BTR 在页面上是否真的生效、passport 页面是否真的被排除，仍要按 05 §2 ⑤ 在浏览器里看一眼。
+- 不读 Tampermonkey 的全局设置，所以不检查可选的 §2 ③C（全局更新间隔）。
+- 表文件只支持无压缩和 Snappy 两种块格式。遇到别的格式时会提示并跳过那些块；这时在 Tampermonkey 里对 BTR 做一次改动（比如停用再启用），最新记录就会写进 `.log`，重跑即可。
+- 依赖 Tampermonkey 现在的存储格式（键名 `@source#` / `@meta#`、设置项 `options.check_for_updates`），2026-10-13 在 Tampermonkey 5.5.1 上确认过；以后的版本如果改了格式，可能会读不到或报"读不到设置"。
+- 只认审计过的提交 `0302b34`（v2026.10.8.1）。按 [05 §4](../docs/zh-CN/05-safe-install.md) 升级到新提交后，正文和版本两项会报 FAIL，这是预期的：新版本要先经过复审。
+- 正文一致只说明代码与审计时相同。审计本身查了什么、没查什么，见 [03](../docs/zh-CN/03-btr-security-audit.md)。
+
+---
+
 ## 测试情况（如实说明）
 
 **cdn-bench.js**
@@ -148,5 +237,17 @@
 - **模拟环境**：伪造 WebGL 和 `mediaCapabilities` 的回答，覆盖 10 种情况：SwiftShader + 三种编码都没有硬解（即案例中的情况）、全部硬解、只有 HEVC 硬解且播放策略为默认、选了 AVC 但 HEVC 有硬解、没有 WebGL、没有 `mediaCapabilities`、不在 bilibili.com、查询被拒绝 + 没有 `userAgentData`、只有 AVC 硬解、未知的播放策略值。每种情况的结论都符合预期，没有报错，canvas 用完即释放。
 - **真实 B 站页面**（2026-10-13，未登录，同上的浏览器，粘贴的代码与本文件一致）：立即出结果；六项查询都报告 supported / smooth / powerEfficient = true，结论为"✓ 硬件加速看起来正常"并建议 HEVC 或 AV1；页面上没有留下 canvas。
 - **还没测过**：在真正关掉硬件加速的浏览器里运行。"软件渲染 / 没有硬解"这条结论目前只在模拟环境里验证过。
+
+**verify-tm-install.py**（本次新写）
+- **自检**（`--self-test`）：CRC32C 标准测试值、Snappy 解压（含重叠复制和两种损坏输入）、跨块的 FIRST / MIDDLE / LAST 分片、WriteBatch 解析、损坏的分片被丢弃。
+- **模拟场景**：16 种文件头 / 设置组合，结论都符合预期。通过的：按指南改好、CRLF 换行、排除规则写在「用户排除」里、文件开头有 BOM；不通过的：「检查更新」仍勾选、读不到设置、「原始排除规则」被关掉、多了 `@require`、文件头前有代码、文件头里有非注释行、正文改了一个字符、多了 `@grant GM_cookie`、设置里另加了匹配规则、未修改的发布文件、改了 `@name`；只警告的：脚本停用 + 运行时机被覆盖。另用一份合成的 LevelDB 日志端到端跑过一次：改名后的脚本按 `@namespace` 找到，`--audited-file` 正确指出第一处差异的行号，同一存储里的另一个脚本没有出现在输出里。
+- **损坏输入**：对真实存储的副本（`.log`、`.ldb`、`MANIFEST`）随机改写字节、随机截断，各 60 轮，外加 300 段随机 Snappy 数据：没有崩溃，损坏的部分被跳过并计数。
+- **真实存储**（2026-10-13，Windows，Chrome，Tampermonkey 5.5.1，浏览器开着）：
+  - 当前存储：不到 1 秒读完 1 个 `.log` 和 1 个 `.ldb`。正文逐字节一致；`@updateURL` / `@downloadURL` 为 `none`；4 条排除规则、`@run-at`、6 项 `@grant`、范围、其余文件头都通过；唯一的 FAIL 是「检查更新」仍勾选。这和 [05 §2 ③B](../docs/zh-CN/05-safe-install.md) 记下的现象一致：只改文件头，这个开关不会跟着关掉。
+  - 同一天早些时候的一份存储副本（刚改完文件头时）：工具指出了 §2 ④ 说的粘行，`// @exclude      https://member.bilibili.com/*// @run-at       document-start`，并据此报告 member 排除规则缺失、`@run-at` 丢失。
+  - 表文件：313 个数据块全部通过 CRC 校验并成功解压，键的顺序符合 LevelDB 的排序规则。
+  - 一个装了 Tampermonkey 但没有任何脚本的个人资料：报告"没有找到 BTR"，退出码 2。
+  - 在 Python 3.11、3.12、3.13 上跑过；语法按 3.8 检查过。
+- **还没测过**：macOS 和 Linux；Edge、Brave、Opera、Chromium 里真的装了 BTR 的情况；Tampermonkey BETA；Python 3.8–3.10 实机运行。
 
 如果你在自己的浏览器里运行时报错，欢迎提 issue，附上控制台截图（先删掉显卡型号等你不想公开的信息）。

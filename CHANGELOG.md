@@ -10,9 +10,10 @@
   - **A. 本地播放链路**：浏览器硬件加速被关闭，导致软解和软件渲染。
   - **B. 冷门长尾内容**：海外 CDN 边缘节点没有缓存。
 - **60 秒自查清单**，第 1 步是检查硬件加速。
-- **荷兰案例**：3 轮测速，覆盖 3 个冷门视频和 1 个热门视频、10 个 CDN 节点，其中一轮是登录后的 1080P60。还记录了案例中硬件加速被关闭的完整证据：SwiftShader、`mediaCapabilities`、只下发 AVC 轨道。
-- **文档**（`docs/zh-CN/`）：01 诊断、02 原因与实测、03 BTR 安全审计（只覆盖提交 `0302b34`）、04 替代方案（已按事实核查更正）、05 安全安装 BTR（Tampermonkey / Violentmonkey 钉版本配方、A/B 测试、卸载）。
-- **工具**（`tools/`，只读）：`cdn-bench.js`（CDN 冷数据测速）、`play-monitor.js`（播放监视）、新增 `decode-check.js`（硬件解码与渲染检查，不发网络请求）。
+- **荷兰案例**：3 轮测速，覆盖 3 个冷门视频和 1 个热门视频、10 个 CDN 节点，其中一轮是登录后的 1080P60。还记录了案例中硬件加速被关闭的完整证据：SwiftShader、`mediaCapabilities`、只下发 AVC 轨道；以及修复后的一次播放观察：开启硬件加速、钉版本 BTR，冷门视频 1080P60 拖动后 3.2 秒起播，40 秒内 0 次卡顿，2502 帧只丢 1 帧（0.04%）。
+- **文档**（`docs/zh-CN/`）：01 诊断、02 原因与实测、03 BTR 安全审计（只覆盖提交 `0302b34`）、04 替代方案（已按事实核查更正）、05 安全安装 BTR（Tampermonkey / Violentmonkey 钉版本配方、A/B 测试、卸载）、06 技术深挖（playurl 与签名地址、缓存分层、250 ms 往返下的 TCP 算术、BTR 的调度与对冲、Chrome 的解码器选择）。
+- **图表**（`assets/`）：首页前后对比图与两张测速图（SVG，支持深色模式）；README 和 06 里另有 Mermaid 流程图与时序图。
+- **工具**（`tools/`，只读）：`cdn-bench.js`（CDN 冷数据测速）、`play-monitor.js`（播放监视）、新增 `decode-check.js`（硬件解码与渲染检查，不发网络请求），以及本机运行的 `verify-tm-install.py`（只读核对 Tampermonkey 实际存储的 BTR 与审计提交 `0302b34` 是否一致；只用 Python 标准库，不联网，不写文件）。
 - **许可**：代码 MIT，文档 CC BY 4.0。
 
 ### English
@@ -21,9 +22,10 @@
   - **A. Local playback stack**: hardware acceleration is turned off in the browser, so decoding and rendering fall back to software.
   - **B. Cold long-tail content**: overseas CDN edges have nothing cached for it.
 - **60-second checklist**, with hardware acceleration as step 1.
-- **Netherlands case study**: three benchmark runs covering 3 cold videos, 1 hot video and 10 CDN nodes, one of them logged in at 1080P60. It also records the full evidence that hardware acceleration was off: SwiftShader, `mediaCapabilities`, and AVC-only tracks.
-- **Docs** (`docs/en/`): 01 diagnosis, 02 why-cdn, 03 BTR security audit (commit `0302b34` only), 04 alternatives (with fact-check corrections), 05 safe install (pinned Tampermonkey / Violentmonkey recipe, A/B protocol, uninstall).
-- **Tools** (`tools/`, read-only): `cdn-bench.js` (cold-cache CDN benchmark), `play-monitor.js` (playback monitor), and the new `decode-check.js` (hardware decode and rendering check, no network).
+- **Netherlands case study**: three benchmark runs covering 3 cold videos, 1 hot video and 10 CDN nodes, one of them logged in at 1080P60. It also records the full evidence that hardware acceleration was off: SwiftShader, `mediaCapabilities`, and AVC-only tracks; and one playback observation after the fix: with hardware acceleration on and BTR pinned, a cold video at 1080P60 started 3.2 s after a seek, had 0 stalls in 40 s, and dropped 1 of 2502 frames (0.04%).
+- **Docs** (`docs/en/`): 01 diagnosis, 02 why-cdn, 03 BTR security audit (commit `0302b34` only), 04 alternatives (with fact-check corrections), 05 safe install (pinned Tampermonkey / Violentmonkey recipe, A/B protocol, uninstall), 06 technical deep dive (playurl and signed URLs, cache tiers, TCP arithmetic at 250 ms, how BTR schedules and hedges, Chrome's decoder choice).
+- **Figures** (`assets/`): hero before-after figure and two benchmark charts (SVG, dark-mode aware); the README and 06 also carry Mermaid flowcharts and a sequence diagram.
+- **Tools** (`tools/`, read-only): `cdn-bench.js` (cold-cache CDN benchmark), `play-monitor.js` (playback monitor), the new `decode-check.js` (hardware decode and rendering check, no network), and `verify-tm-install.py`, run locally (read-only check that the BTR Tampermonkey actually stored matches audited commit `0302b34`; Python standard library only, no network, writes no files).
 - **License**: code MIT, docs CC BY 4.0.
 
 ## 下次复查 · Next review

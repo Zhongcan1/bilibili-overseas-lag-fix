@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="472" viewBox="0 0 960 472" role="img" aria-labelledby="title desc" xml:lang="zh-CN" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, &quot;Noto Sans CJK SC&quot;, &quot;Noto Sans SC&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif"><title id="title">海外看 B 站：从转圈到流畅</title><desc id="desc">荷兰案例（2026-10-13）的前后对比。原因 A：硬件加速关闭时 WebGL 渲染器是 SwiftShader（CPU 软件渲染），B 站只下发 AVC；打开后改由 GPU（D3D11）渲染，HEVC 和 AV1 硬件解码，B 站下发 AVC、HEVC、AV1。原因 B：冷门 1080P60 视频，B 站分配的海外节点单连接 0.4 Mbps（超时），大陆节点 hw 8 路并行 26.3 Mbps，所需 5.2 Mbps。结果：钉版本 BTR 加硬件加速，从没人看过的 10:00 开始播放，跳转后 3.2 秒起播，之后 40 秒 0 次卡顿，第 10 秒前方缓冲 45 秒，2502 帧丢 1 帧（0.04%）。单次样本。</desc><style>svg{font-family:system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", Roboto, "Helvetica Neue", Arial, sans-serif}.mono{font-family:ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, "Liberation Mono", Menlo, monospace}.num{font-variant-numeric:tabular-nums}.halo,.thalo{stroke-width:4px;stroke-linejoin:round;paint-order:stroke}.bg{fill:#fcfcfb;stroke:#e1e0d9}.tile{fill:#f3f2ee;stroke:#e1e0d9}.t1{fill:#0b0b0b}.t2{fill:#52514e}.grid{stroke:#e1e0d9}.base{stroke:#c3c2b7}.wash{fill:#efeee9}.s1{fill:#2a78d6}.s2{fill:#eb6834}.thr{stroke:#52514e}.thrf{fill:#52514e}.good{stroke:#0ca30c}.chip{fill:none;stroke:#c3c2b7}.halo{stroke:#fcfcfb}.thalo{stroke:#f3f2ee}@media (prefers-color-scheme:dark){.bg{fill:#1a1a19;stroke:#2c2c2a}.tile{fill:#222220;stroke:#2c2c2a}.t1{fill:#ffffff}.t2{fill:#c3c2b7}.grid{stroke:#2c2c2a}.base{stroke:#383835}.wash{fill:#232321}.s1{fill:#3987e5}.s2{fill:#d95926}.thr{stroke:#c3c2b7}.thrf{fill:#c3c2b7}.good{stroke:#0ca30c}.chip{fill:none;stroke:#383835}.halo{stroke:#1a1a19}.thalo{stroke:#222220}}</style><rect x="0.5" y="0.5" width="959" height="471" rx="14" class="bg" stroke-width="1"/>
+<text x="32.0" y="42.0" font-size="12" font-weight="600" class="t2">荷兰案例 · 2026-10-13</text>
+<text x="32.0" y="80.0" font-size="30" font-weight="600" class="t1">海外看 B 站：从转圈到流畅</text>
+<text x="32.0" y="108.0" font-size="14" class="t2">两个互相独立的原因叠在一起：硬件加速被关掉（A）+ 冷门视频在海外边缘节点上没有缓存（B）</text>
+<rect x="32.0" y="132.0" width="288.0" height="290.0" rx="12" class="tile" stroke-width="1"/>
+<rect x="52.0" y="150.0" width="52.3" height="20.0" rx="10" class="chip" stroke-width="1"/>
+<text x="78.1" y="164.0" font-size="11" font-weight="600" text-anchor="middle" class="t1">原因 A</text>
+<text x="114.3" y="165.0" font-size="14" font-weight="600" class="t1">画面渲染与解码</text>
+<circle cx="58.5" cy="194.0" r="6.5" fill="none" class="thr" stroke-width="1.4"/>
+<line x1="55.5" y1="194.0" x2="61.5" y2="194.0" class="thr" stroke-width="1.6" stroke-linecap="round"/>
+<text x="71.0" y="198.0" font-size="12" font-weight="600" class="t2">之前</text>
+<text x="52.0" y="228.0"><tspan font-size="24" class="t1">SwiftShader</tspan></text>
+<text x="52.0" y="248.0" font-size="12" class="t2">硬件加速关：CPU 软件渲染、软解</text>
+<circle cx="58.5" cy="278.0" r="6.5" fill="none" class="good" stroke-width="1.6"/>
+<path d="M55.5,278.2l2.1,2.2l4,-4.4" fill="none" class="good" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="71.0" y="282.0" font-size="12" font-weight="600" class="t1">之后</text>
+<text x="52.0" y="322.0"><tspan font-size="36" font-weight="600" class="t1">GPU</tspan><tspan font-size="15" class="t2">  D3D11</tspan></text>
+<text x="52.0" y="342.0" font-size="12" class="t2">硬件加速开：HEVC / AV1 硬件解码</text>
+<text x="52.0" y="376.0" font-size="11" class="t2">B 站下发的编码</text>
+<rect x="52.0" y="384.0" width="39.1" height="20.0" rx="10" class="chip" stroke-width="1"/>
+<text x="71.5" y="398.0" font-size="11" font-weight="600" text-anchor="middle" class="t1">AVC</text>
+<text x="103.1" y="398.0" font-size="14" text-anchor="middle" class="t2">→</text>
+<rect x="115.1" y="384.0" width="39.1" height="20.0" rx="10" class="chip" stroke-width="1"/>
+<text x="134.6" y="398.0" font-size="11" font-weight="600" text-anchor="middle" class="t1">AVC</text>
+<rect x="160.2" y="384.0" width="46.8" height="20.0" rx="10" class="chip" stroke-width="1"/>
+<text x="183.6" y="398.0" font-size="11" font-weight="600" text-anchor="middle" class="t1">HEVC</text>
+<rect x="213.0" y="384.0" width="38.2" height="20.0" rx="10" class="chip" stroke-width="1"/>
+<text x="232.0" y="398.0" font-size="11" font-weight="600" text-anchor="middle" class="t1">AV1</text>
+<rect x="336.0" y="132.0" width="288.0" height="290.0" rx="12" class="tile" stroke-width="1"/>
+<rect x="356.0" y="150.0" width="52.3" height="20.0" rx="10" class="chip" stroke-width="1"/>
+<text x="382.1" y="164.0" font-size="11" font-weight="600" text-anchor="middle" class="t1">原因 B</text>
+<text x="418.3" y="165.0" font-size="14" font-weight="600" class="t1">冷门 1080P60 · 下载速度</text>
+<circle cx="362.5" cy="194.0" r="6.5" fill="none" class="thr" stroke-width="1.4"/>
+<line x1="359.5" y1="194.0" x2="365.5" y2="194.0" class="thr" stroke-width="1.6" stroke-linecap="round"/>
+<text x="375.0" y="198.0" font-size="12" font-weight="600" class="t2">之前</text>
+<text x="356.0" y="228.0"><tspan font-size="24" class="t1">0.4</tspan><tspan font-size="14" class="t2"> Mbps</tspan></text>
+<text x="356.0" y="248.0" font-size="12" class="t2">B 站分配的海外节点 · 单连接 · 超时</text>
+<circle cx="362.5" cy="278.0" r="6.5" fill="none" class="good" stroke-width="1.6"/>
+<path d="M359.5,278.2l2.1,2.2l4,-4.4" fill="none" class="good" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="375.0" y="282.0" font-size="12" font-weight="600" class="t1">之后</text>
+<text x="356.0" y="322.0"><tspan font-size="36" font-weight="600" class="t1">26.3</tspan><tspan font-size="15" class="t2"> Mbps</tspan></text>
+<text x="356.0" y="342.0" font-size="12" class="t2">大陆节点 hw · 8 路并行</text>
+<rect x="356.0" y="364.0" width="46.1" height="30.0" class="wash"/>
+<path d="M356.0,368.0H356.0A3.5,3.5 0 0 1 359.5,371.5V373.5A3.5,3.5 0 0 1 356.0,377.0H356.0Z" class="s1"><title>0.4 Mbps</title></path>
+<path d="M356.0,380.0H584.9A4.0,4.0 0 0 1 588.9,384.0V385.0A4.0,4.0 0 0 1 584.9,389.0H356.0Z" class="s2"><title>26.3 Mbps</title></path>
+<line x1="402.1" y1="362.0" x2="402.1" y2="396.0" class="thr" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="400.1" y="410.0" font-size="11" class="t2">需要 5.2（1.5 × 码率）</text>
+<rect x="640.0" y="132.0" width="288.0" height="290.0" rx="12" class="tile" stroke-width="1"/>
+<rect x="660.0" y="150.0" width="41.3" height="20.0" rx="10" class="chip" stroke-width="1"/>
+<text x="680.7" y="164.0" font-size="11" font-weight="600" text-anchor="middle" class="t1">结果</text>
+<text x="711.3" y="165.0" font-size="14" font-weight="600" class="t1">修好之后的播放</text>
+<text x="660.0" y="196.0" font-size="12" class="t2">钉版本 BTR + 硬件加速 · 同一个冷门视频</text>
+<circle cx="666.5" cy="236.0" r="6.5" fill="none" class="good" stroke-width="1.6"/>
+<path d="M663.5,236.2l2.1,2.2l4,-4.4" fill="none" class="good" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="680.0" y="250.0"><tspan font-size="44" font-weight="600" class="t1">0</tspan><tspan font-size="16" class="t1"> 次卡顿</tspan></text>
+<text x="660.0" y="272.0" font-size="12" class="t2">跳到没人看过的 10:00，之后 40 秒内</text>
+<circle cx="666.5" cy="310.0" r="6.5" fill="none" class="good" stroke-width="1.6"/>
+<path d="M663.5,310.2l2.1,2.2l4,-4.4" fill="none" class="good" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="680.0" y="322.0"><tspan font-size="36" font-weight="600" class="t1">0.04%</tspan><tspan font-size="16" class="t1"> 丢帧</tspan></text>
+<text x="660.0" y="344.0" font-size="12" class="t2">2502 帧里丢了 1 帧（1080P60）</text>
+<line x1="660.0" y1="364.0" x2="908.0" y2="364.0" class="grid" stroke-width="1"/>
+<text x="660.0" y="388.0" font-size="12" class="t2">跳转后 3.2 秒起播 · 第 10 秒前方缓冲 45 秒</text>
+<text x="32.0" y="452.0" font-size="12" class="t2">一台笔记本、单次样本，你的数字会不一样。方法与原始数据：docs/zh-CN/02-why-cdn.md</text>
+</svg>

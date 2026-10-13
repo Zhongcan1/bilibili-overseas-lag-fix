@@ -3,6 +3,8 @@
 [简体中文](../zh-CN/02-why-cdn.md) · **English** · [← Back to README](../../README.en.md)
 
 > **In short**: popular videos hit the cache on overseas edge nodes, so they load fast. Unpopular ("cold") videos are not cached on overseas edges, so every piece of data has to be fetched from the origin in mainland China. Bilibili's web player opens only 1 connection per segment and does not switch nodes just because a node is slow, so all you get is the spinner. All 3 unpopular videos in the Netherlands case study follow this pattern: **the overseas nodes Bilibili assigned stay far below the bitrate, while "mainland nodes + parallel" holds steady at 24–26 Mbps.**
+>
+> Want the mechanics behind these numbers (signed URLs, cache tiers, TCP at 250 ms, how BTR schedules its requests)? See [06 · Technical deep dive](06-technical-deep-dive.md).
 
 ## 1. How it works
 
@@ -40,6 +42,8 @@ Unpopular video: you ──a few ms──▶ local overseas edge (not cached) �
 
 Single connection = one connection downloading 2 MB, which is how Bilibili's own player downloads. 8-way parallel = the same number of bytes split into 8 parts downloaded at the same time, which is how userscripts such as BTR download. "÷bitrate" is the speed divided by 3.48 Mbps; ✅ means ≥ 1.5. In `cdn-bench.js` output, the roles appear in Chinese as 分配-主 (assigned primary), 分配-备 (assigned backup), 海外 (overseas) and 大陆 (mainland).
 
+![Bar chart of run 3: cold-data throughput per CDN node, single connection versus 8 in parallel, with a dashed line at the 5.2 Mbps needed. The assigned Akamai and cosov nodes manage only 0.4 Mbps on one connection (timeout) and under 1 Mbps in parallel; the mainland nodes hw and bd reach 26.3 and 25.5 Mbps with 8 in parallel, and 08c 18.1 Mbps on one connection.](../../assets/cold-throughput-run3.en.svg)
+
 | Node | Role | Single Mbps | ÷bitrate | 8-way parallel Mbps | ÷bitrate | Single TTFB |
 |---|---|---:|---:|---:|---:|---:|
 | `upos-hz-mirrorakam.akamaized.net` | **Assigned by Bilibili · primary** (Akamai) | 0.4 (timeout) | 0.11 | 0.7 | 0.20 | 2088 ms |
@@ -60,6 +64,17 @@ Single connection = one connection downloading 2 MB, which is how Bilibili's own
 3. **"Mainland + parallel" has the most headroom**: hw 26.3 and bd 25.5 Mbps, about 5× the 5.2 Mbps pass mark.
 4. **Overseas nodes alone are not enough, even in parallel**: the best overseas result is Hong Kong at 4.5 Mbps in parallel, below 5.2.
 5. By the rules in `cdn-bench.js`, the verdict for this run is "another node reaches ≥1.5× on a single connection". So for this video, the lighter single-connection CDN-switch userscript (realzza) may be enough, and BTR also works. But in run 2, ali timed out completely: **a single node is not reliable** (see §5).
+
+**After the fix, same video (same day)**: after hardware acceleration was turned on and the browser relaunched, the WebGL renderer changed from SwiftShader to the GPU (D3D11), HEVC and AV1 were decoded in hardware, and the codecs Bilibili served went from AVC only to AVC + HEVC + AV1. With BTR then installed, pinned (full-takeover mode), the video was played at 1080P60 from 10:00, a part nobody had watched before:
+
+| Metric | Result |
+|---|---|
+| Start after the seek | 3.2 s |
+| Stalls in the next 40 s | 0 |
+| Forward buffer | 28 s at 5 s; BTR's 45 s cap reached at 10 s |
+| Dropped frames | 1 / 2502 (0.04%) |
+
+This is a single playback observation, not a strict A/B comparison. To compare for yourself, follow [05 §5](05-safe-install.md#5-ab-test-find-the-settings-that-work-best-for-you).
 
 ## 4. Runs 1 and 2: logged out, low quality
 
@@ -111,6 +126,8 @@ This run was logged out and only got 360P (0.40 Mbps), so the tool's verdict was
 
 ## 5. What the three unpopular videos have in common
 
+![Bar chart: the Bilibili-assigned Akamai node on one connection versus the fastest mainland node of each run with 8 in parallel. On the hot video Akamai gives 63.1 Mbps and the fastest mainland node 29.5; on the three cold videos Akamai gives only 3.6, 5.7 and 0.4 (timeout) Mbps, while the fastest mainland node gives 26.4, 24.0 and 26.3 Mbps.](../../assets/hot-vs-cold.en.svg)
+
 | | Run 1 (480P) | Run 2 (360P) | Run 3 (1080P60) |
 |---|---|---|---|
 | Assigned primary (Akamai): single / TTFB | 3.6 Mbps / 2119 ms | 5.7 Mbps / 1792 ms | 0.4 Mbps (timeout) / 2088 ms |
@@ -161,4 +178,4 @@ To save the result, type `copy(JSON.stringify(__cdnBench))` in the console. The 
 
 ---
 
-Previous: [01 · Diagnosis](01-diagnosis.md) · Next: [03 · BTR security audit](03-btr-security-audit.md)
+Previous: [01 · Diagnosis](01-diagnosis.md) · Next: [03 · BTR security audit](03-btr-security-audit.md) · Deeper: [06 · Technical deep dive](06-technical-deep-dive.md)

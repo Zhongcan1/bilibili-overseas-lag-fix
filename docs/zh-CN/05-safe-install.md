@@ -86,6 +86,8 @@ BTR 在这些子域上本来就没有任何功能，排除之后，坏版本也�
 - 打开任意一个视频：页面上有 BTR 的悬浮球；右键「视频统计信息」里，Player Type 显示 `BTR Native`。
 - 打开 `https://passport.bilibili.com/login`，在 F12 控制台输入 `document.documentElement.hasAttribute('data-btr-userscript')`，结果应该是 `false`，说明排除生效了。
 
+> **可选：自动核对**。在本仓库的 `tools` 目录里运行 `python3 verify-tm-install.py`（Windows 用 `py`，需要 Python 3.8+，只用标准库）。它只读地打开 Tampermonkey 的存储，确认 Tampermonkey **实际存下来**的代码与审计提交 `0302b34` 逐字节一致，并自动核对上面前四项（两行 `none`、「检查更新」、`@run-at` 与 4 条 `@exclude` 各占一行、版本号），以及没有多出 `@require` / `@connect` / `@grant`，最后给出 PASS / FAIL。不联网、不写文件，只打印 BTR 这一个脚本的信息。后两项（悬浮球、passport 页面）仍要在浏览器里看。说明见 [tools](../../tools/README.md#verify-tm-installpy确认装的就是审计过的那份)。
+
 **⑥ 首次设置**：
 
 - 播放策略**明确**选 HEVC（或者在 GPU 支持 AV1 硬解时选 AV1），不要留在「默认」。BTR 会跟随这个设置（[源码][btr-codec]）；选「默认」时，它按 AV1 > HEVC > AVC 的顺序，只用 `isTypeSupported` 判断（[源码][btr-order]），而这在没有 AV1 硬解的电脑上可能落到 CPU 软解。

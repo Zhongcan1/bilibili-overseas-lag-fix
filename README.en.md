@@ -10,6 +10,17 @@ Bilibili (哔哩哔哩 / B站) lag overseas · endless buffering · 1080P60 drop
 ![code: MIT](https://img.shields.io/badge/code-MIT-green)
 ![docs: CC BY 4.0](https://img.shields.io/badge/docs-CC%20BY%204.0-lightgrey)
 
+<img src="assets/hero.en.svg" width="100%" alt="Before and after in the Netherlands case study. Cause A: with hardware acceleration off, SwiftShader rendered in software; with it on, the GPU renders and HEVC and AV1 are decoded in hardware. Cause B: on a cold 1080P60 video the assigned overseas node gave 0.4 Mbps on one connection, a mainland node gave 26.3 Mbps with 8 in parallel, and 5.2 Mbps was needed. Result: 0 stalls in 40 seconds, 0.04% of frames dropped.">
+
+**Who this is for**: anyone outside mainland China watching Bilibili in Chrome or Edge whose popular videos start instantly but unpopular ones keep buffering, or whose picture stutters.
+
+| Rendering (cause A) | Cold 1080P60 download (cause B) | Playback after the fix |
+|:---:|:---:|:---:|
+| **SwiftShader → GPU** | **0.4 → 26.3 Mbps** | **0 stalls · 0.04% dropped** |
+| One switch, and HEVC / AV1<br>are decoded by the GPU | Assigned overseas node, 1 connection →<br>mainland node, 8 in parallel (5.2 needed) | Pinned BTR + HW acceleration:<br>0 stalls in 40 s, 1 of 2502 frames dropped |
+
+<sub>Netherlands case study, 2026-10-13, one laptop, single samples. Data and method: <a href="docs/en/02-why-cdn.md">02 · Why the CDN</a>.</sub>
+
 </div>
 
 You live in Europe, North America, Oceania or somewhere else outside mainland China. You open Bilibili: popular videos start instantly, but unpopular ones keep buffering, and 1080P60 with danmaku (bullet comments) turned on stutters. Advice online is everywhere: change your DNS, use a "return-to-China" accelerator, edit your hosts file… We worked through the problem from scratch in **the Netherlands**: we inspected the browser's internal state, ran 3 benchmark runs covering 10 CDN nodes and 3 unpopular videos, and audited the most-starred speed-up userscript line by line. The conclusion: stutter usually comes from **two independent causes that add up**, and the first one is often fixed by flipping a single switch.
@@ -27,6 +38,25 @@ You live in Europe, North America, Oceania or somewhere else outside mainland Ch
 > - **B**: on an unpopular video (1080P60 AVC, bitrate 3.48 Mbps), the overseas node Bilibili assigned delivered only **0.4 Mbps** on a single connection; switching to mainland nodes with 8 parallel connections reached **26 Mbps**, about 5 times the speed needed.
 >
 > Both causes were present at the same time; fixing only one of them is not enough. Data and method: [02 · Why the CDN](docs/en/02-why-cdn.md).
+
+## Where the video gets stuck, in one picture
+
+```mermaid
+flowchart TD
+  V["You open a video<br/>outside mainland China"] --> API["Bilibili playurl API<br/>primary + backup URL"]
+  API -- "default:<br/>Bilibili's own player" --> EDGE["Assigned overseas edge<br/>e.g. Akamai · cosov · aliov"]
+  EDGE -. "cause B: cold video<br/>cache miss → origin<br/>~2 s to first byte" .-> ORIGIN[("Origin in mainland China")]
+  EDGE -- "1 connection per segment<br/>Akamai: hot 63 Mbps<br/>cold 0.4–5.7 Mbps" --> MSE["MSE media buffer<br/>(browser)"]
+  API -- "pinned BTR<br/>(mainland mode)" --> UPOS["Mainland upos nodes<br/>hw · bd · ali · 08c …"]
+  UPOS -- "byte ranges in parallel<br/>fastest node measured<br/>24–26 Mbps" --> MSE
+  MSE --> HW{"Hardware acceleration on?"}
+  HW -- "on" --> GPU["GPU decode<br/>AVC · HEVC · AV1"] --> SMOOTH(["Smooth"])
+  HW -- "cause A: off" --> CPU["SwiftShader + CPU decode<br/>no HEVC"] --> DROP(["Dropped frames"])
+```
+
+<img src="assets/hot-vs-cold.en.svg" width="100%" alt="Bar chart: the same Bilibili-assigned Akamai node gives 63.1 Mbps on one connection for a hot video, but only 3.6, 5.7 and 0.4 (timeout) Mbps on three cold videos, while the fastest mainland node of each run, with 8 parallel requests, holds 24.0 to 26.4 Mbps on the cold videos.">
+
+Popular videos hit the cache on the overseas edge, so they start instantly. For unpopular videos every segment has to come from the origin in mainland China, and the native player opens only 1 connection per segment and does not switch nodes just because one is slow. On popular videos the node Bilibili assigns is faster than any mainland node, so **the gain from speed-up scripts is concentrated on unpopular videos**. How it works, and all the data: [02 · Why the CDN](docs/en/02-why-cdn.md).
 
 ## 60-second checklist
 
@@ -91,6 +121,7 @@ flowchart TD
 | [03 · BTR security audit](docs/en/03-btr-security-audit.md) | Audit method, conclusions and every finding; the real risk (unpinned auto-update); the retry-loop bug; cautions about the desktop version and the old extension |
 | [04 · Alternatives](docs/en/04-alternatives.md) | Comparison of userscripts, extensions, clients, downloaders and network-level options (with fact-check corrections applied); a "not recommended" list with reasons |
 | [05 · Safe install of BTR](docs/en/05-safe-install.md) | Pinned install in Tampermonkey or Violentmonkey; turning off updates, excluding sensitive subdomains, checking permissions; reviewing upgrades; A/B testing and pass criteria; uninstalling |
+| [06 · Technical deep dive](docs/en/06-technical-deep-dive.md) | Under the hood: playurl and signed URLs (why mirrors accept a swapped host and Akamai does not); cache tiers and cold misses; TCP arithmetic at 250 ms; how BTR schedules and hedges, compared with realzza and MBGTEB; Chrome's decoder choice and what `mediaCapabilities` really reports; pitfalls of `cdn-bench.js` |
 
 ## Tools (read-only: they change no page settings and upload no data)
 
@@ -99,6 +130,7 @@ flowchart TD
 | [`tools/decode-check.js`](tools/decode-check.js) | Checks hardware acceleration: the WebGL renderer (flags SwiftShader), AVC / HEVC / AV1 decoding capability at 1080p60 and 4K, Bilibili's codec preference setting, then prints a verdict | Sends no requests at all |
 | [`tools/cdn-bench.js`](tools/cdn-bench.js) | For the current video, measures each CDN node's cold-data throughput and time to first byte, compares single and parallel connections, then prints a verdict | Bilibili video CDN only, no cookies |
 | [`tools/play-monitor.js`](tools/play-monitor.js) | Records startup time, stall count and duration, waits after seeking, and dropped frames | Sends no requests at all |
+| [`tools/verify-tm-install.py`](tools/verify-tm-install.py) | Runs on your computer (Python 3.8+, standard library only): checks that the BTR Tampermonkey **actually stored** is byte-identical to audited commit `0302b34`, that the header was edited as in [05](docs/en/05-safe-install.md), and that "Check for updates" is off, then prints PASS / FAIL; it prints information about the BTR script only | No network, writes no files |
 
 Usage and safety notes: [`tools/README.en.md`](tools/README.en.md). **Read the code from top to bottom before pasting it into the console.** Never paste console code a stranger sends you.
 
@@ -123,7 +155,7 @@ Benchmark results from your region are very welcome, for example North America, 
 - Nothing here **bypasses** paywalls, premium membership (大会员), DRM, region locks or login. It only addresses playback smoothness for content you can already watch. Personal use only.
 - Speed-up scripts that rewrite CDN addresses may not comply with Bilibili's user agreement and may stop working at any time. Whether to use them is your own decision and your own risk (see [04 §E](docs/en/04-alternatives.md#e-legal-and-longevity-risks)).
 - The BTR audit covers **only** commit `0302b345cdfe367ac599b52dc6874e3f7967e220`. It is a static audit, not an endorsement, and does not guarantee that this version or any later version is completely safe.
-- The scripts in `tools/` are all read-only, short, and neither minified nor obfuscated. Read the code before running it.
+- The tools in `tools/` are all read-only and neither minified nor obfuscated: the three console snippets are short, and `verify-tm-install.py` uses only the Python standard library and no network. Read the code before running it.
 - Benchmarks are single samples; CDN conditions vary with the time of day, the date and the region.
 
 ## Credits

@@ -86,6 +86,8 @@ BTR has no function on these subdomains anyway. Once they are excluded, even a b
 - Open any video: BTR's floating button (悬浮球) appears on the page; right-click the player → "Stats for nerds (视频统计信息)", and Player Type shows `BTR Native`.
 - Open `https://passport.bilibili.com/login` and type `document.documentElement.hasAttribute('data-btr-userscript')` in the F12 console. The result should be `false`, which means the exclusion works.
 
+> **Optional: automated check.** From this repository's `tools` folder, run `python3 verify-tm-install.py` (`py` on Windows; Python 3.8+, standard library only). It opens Tampermonkey's storage read-only, confirms that the code Tampermonkey **actually stored** is byte-identical to audited commit `0302b34`, and checks the first four items above for you (both `none` lines, "Check for updates", `@run-at` and the 4 `@exclude` lines each on their own line, the version), plus no extra `@require` / `@connect` / `@grant`. It ends with PASS / FAIL. No network, no files written, and it prints information about the BTR script only. The last two items (floating button, passport page) still need a look in the browser. Details in [tools](../../tools/README.en.md#verify-tm-installpy-confirm-you-installed-the-audited-file).
+
 **⑥ First-time setup:**
 
 - **Explicitly** set "Codec preference (播放策略)" to HEVC (or to AV1 if your GPU can decode AV1 in hardware); do not leave it on "Default (默认)". BTR follows this setting ([source][btr-codec]). On "Default" it tries AV1 > HEVC > AVC, judged only by `isTypeSupported` ([source][btr-order]), and on a computer without AV1 hardware decoding that can end up as CPU software decoding.

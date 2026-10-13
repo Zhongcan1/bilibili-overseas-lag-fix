@@ -1,0 +1,3 @@
+# Python bytecode caches embed absolute local paths; never publish them.
+__pycache__/
+*.py[cod]

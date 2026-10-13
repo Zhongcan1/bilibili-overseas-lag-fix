@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="671" viewBox="0 0 960 671" role="img" aria-labelledby="title desc" xml:lang="en" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, &quot;Noto Sans CJK SC&quot;, &quot;Noto Sans SC&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif"><title id="title">Cold 1080P60 video: the nodes Bilibili assigns fall far short</title><desc id="desc">Horizontal bar chart of cold-data throughput per CDN node for the unpopular video BV1wqbT6AEbe (1080P60 AVC, 3.48 Mbps), logged in, Netherlands, 2026-10-13: single connection versus 8 in parallel, with a dashed line at the 5.2 Mbps needed. Assigned Akamai 0.4 Mbps single (timeout) and 0.7 parallel; cosov 0.4 (timeout) / 0.9; aliov 1.0 (timeout) / 3.3; Hong Kong 1.0 (timeout) / 4.5; mainland ali 6.9 / 11.0, hw 6.0 / 26.3, 08c 18.1 / 6.0, cos 2.3 / 7.6, bd 4.6 / 25.5, estgoss 3.9 / 9.7.</desc><style>svg{font-family:system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", Roboto, "Helvetica Neue", Arial, sans-serif}.mono{font-family:ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, "Liberation Mono", Menlo, monospace}.num{font-variant-numeric:tabular-nums}.halo,.thalo{stroke-width:4px;stroke-linejoin:round;paint-order:stroke}.bg{fill:#fcfcfb;stroke:#e1e0d9}.tile{fill:#f3f2ee;stroke:#e1e0d9}.t1{fill:#0b0b0b}.t2{fill:#52514e}.grid{stroke:#e1e0d9}.base{stroke:#c3c2b7}.wash{fill:#efeee9}.s1{fill:#2a78d6}.s2{fill:#eb6834}.thr{stroke:#52514e}.thrf{fill:#52514e}.good{stroke:#0ca30c}.chip{fill:none;stroke:#c3c2b7}.halo{stroke:#fcfcfb}.thalo{stroke:#f3f2ee}@media (prefers-color-scheme:dark){.bg{fill:#1a1a19;stroke:#2c2c2a}.tile{fill:#222220;stroke:#2c2c2a}.t1{fill:#ffffff}.t2{fill:#c3c2b7}.grid{stroke:#2c2c2a}.base{stroke:#383835}.wash{fill:#232321}.s1{fill:#3987e5}.s2{fill:#d95926}.thr{stroke:#c3c2b7}.thrf{fill:#c3c2b7}.good{stroke:#0ca30c}.chip{fill:none;stroke:#383835}.halo{stroke:#1a1a19}.thalo{stroke:#222220}}</style><rect x="0.5" y="0.5" width="959" height="670" rx="14" class="bg" stroke-width="1"/>
+<text x="32.0" y="44.0" font-size="20" font-weight="600" class="t1">Cold 1080P60 video: the nodes Bilibili assigns fall far short</text>
+<text x="32.0" y="68.0" font-size="13" class="t2">Cold-data throughput per CDN node · Netherlands · 2026-10-13 · logged in</text>
+<text x="32.0" y="86.0" font-size="13" class="t2">BV1wqbT6AEbe (65 views, about 4 hours) · AVC, declared bitrate 3.48 Mbps</text>
+<rect x="32.0" y="109.0" width="14.0" height="10.0" rx="2" class="s1"/>
+<text x="54.0" y="118.0" font-size="12" class="t2">1 connection (how Bilibili's player fetches)</text>
+<rect x="311.7" y="109.0" width="14.0" height="10.0" rx="2" class="s2"/>
+<text x="333.7" y="118.0" font-size="12" class="t2">8 in parallel (how BTR-style scripts fetch)</text>
+<line x1="588.2" y1="114.0" x2="606.2" y2="114.0" class="thr" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="610.2" y="118.0" font-size="12" class="t2">Needed = 1.5 × bitrate = 5.2 Mbps</text>
+<rect x="232.0" y="138.0" width="124.1" height="431.0" class="wash"/>
+<line x1="351.3" y1="138.0" x2="351.3" y2="569.0" class="grid" stroke-width="1"/>
+<line x1="470.6" y1="138.0" x2="470.6" y2="569.0" class="grid" stroke-width="1"/>
+<line x1="589.9" y1="138.0" x2="589.9" y2="569.0" class="grid" stroke-width="1"/>
+<line x1="709.1" y1="138.0" x2="709.1" y2="569.0" class="grid" stroke-width="1"/>
+<line x1="828.4" y1="138.0" x2="828.4" y2="569.0" class="grid" stroke-width="1"/>
+<text x="32.0" y="171.0" font-size="12" font-weight="600" class="t2">Assigned by Bilibili</text>
+<line x1="32.0" y1="246.0" x2="900.0" y2="246.0" class="grid" stroke-width="1"/>
+<text x="32.0" y="263.0" font-size="12" font-weight="600" class="t2">Other overseas / HK</text>
+<line x1="32.0" y1="338.0" x2="900.0" y2="338.0" class="grid" stroke-width="1"/>
+<text x="32.0" y="355.0" font-size="12" font-weight="600" class="t2">Mainland China</text>
+<text x="32.0" y="194.0" font-size="13" class="t1">Akamai · primary</text>
+<text x="32.0" y="208.0" font-size="11" class="t2 mono">upos-hz-mirrorakam</text>
+<path d="M232.0,184.0H237.5A4.0,4.0 0 0 1 241.5,188.0V191.0A4.0,4.0 0 0 1 237.5,195.0H232.0Z" class="s1"><title>Akamai · primary · 1 connection: 0.4 Mbps (timeout)</title></path>
+<path d="M232.0,198.0H244.7A4.0,4.0 0 0 1 248.7,202.0V205.0A4.0,4.0 0 0 1 244.7,209.0H232.0Z" class="s2"><title>Akamai · primary · 8 in parallel: 0.7 Mbps</title></path>
+<text x="32.0" y="228.0" font-size="13" class="t1">cosov · backup</text>
+<text x="32.0" y="242.0" font-size="11" class="t2 mono">upos-sz-mirrorcosov</text>
+<path d="M232.0,218.0H237.5A4.0,4.0 0 0 1 241.5,222.0V225.0A4.0,4.0 0 0 1 237.5,229.0H232.0Z" class="s1"><title>cosov · backup · 1 connection: 0.4 Mbps (timeout)</title></path>
+<path d="M232.0,232.0H249.5A4.0,4.0 0 0 1 253.5,236.0V239.0A4.0,4.0 0 0 1 249.5,243.0H232.0Z" class="s2"><title>cosov · backup · 8 in parallel: 0.9 Mbps</title></path>
+<text x="32.0" y="286.0" font-size="13" class="t1">aliov</text>
+<text x="32.0" y="300.0" font-size="11" class="t2 mono">upos-sz-mirroraliov</text>
+<path d="M232.0,276.0H251.9A4.0,4.0 0 0 1 255.9,280.0V283.0A4.0,4.0 0 0 1 251.9,287.0H232.0Z" class="s1"><title>aliov · 1 connection: 1.0 Mbps (timeout)</title></path>
+<path d="M232.0,290.0H306.7A4.0,4.0 0 0 1 310.7,294.0V297.0A4.0,4.0 0 0 1 306.7,301.0H232.0Z" class="s2"><title>aliov · 8 in parallel: 3.3 Mbps</title></path>
+<text x="32.0" y="320.0" font-size="13" class="t1">Hong Kong</text>
+<text x="32.0" y="334.0" font-size="11" class="t2 mono">cn-hk-eq-01-01</text>
+<path d="M232.0,310.0H251.9A4.0,4.0 0 0 1 255.9,314.0V317.0A4.0,4.0 0 0 1 251.9,321.0H232.0Z" class="s1"><title>Hong Kong · 1 connection: 1.0 Mbps (timeout)</title></path>
+<path d="M232.0,324.0H335.4A4.0,4.0 0 0 1 339.4,328.0V331.0A4.0,4.0 0 0 1 335.4,335.0H232.0Z" class="s2"><title>Hong Kong · 8 in parallel: 4.5 Mbps</title></path>
+<text x="32.0" y="378.0" font-size="13" class="t1">ali</text>
+<text x="32.0" y="392.0" font-size="11" class="t2 mono">upos-sz-mirrorali</text>
+<path d="M232.0,368.0H392.6A4.0,4.0 0 0 1 396.6,372.0V375.0A4.0,4.0 0 0 1 392.6,379.0H232.0Z" class="s1"><title>ali · 1 connection: 6.9 Mbps</title></path>
+<path d="M232.0,382.0H490.4A4.0,4.0 0 0 1 494.4,386.0V389.0A4.0,4.0 0 0 1 490.4,393.0H232.0Z" class="s2"><title>ali · 8 in parallel: 11.0 Mbps</title></path>
+<text x="32.0" y="412.0" font-size="13" class="t1">hw</text>
+<text x="32.0" y="426.0" font-size="11" class="t2 mono">upos-sz-mirrorhw</text>
+<path d="M232.0,402.0H371.1A4.0,4.0 0 0 1 375.1,406.0V409.0A4.0,4.0 0 0 1 371.1,413.0H232.0Z" class="s1"><title>hw · 1 connection: 6.0 Mbps</title></path>
+<path d="M232.0,416.0H855.4A4.0,4.0 0 0 1 859.4,420.0V423.0A4.0,4.0 0 0 1 855.4,427.0H232.0Z" class="s2"><title>hw · 8 in parallel: 26.3 Mbps</title></path>
+<text x="32.0" y="446.0" font-size="13" class="t1">08c</text>
+<text x="32.0" y="460.0" font-size="11" class="t2 mono">upos-sz-mirror08c</text>
+<path d="M232.0,436.0H659.8A4.0,4.0 0 0 1 663.8,440.0V443.0A4.0,4.0 0 0 1 659.8,447.0H232.0Z" class="s1"><title>08c · 1 connection: 18.1 Mbps</title></path>
+<path d="M232.0,450.0H371.1A4.0,4.0 0 0 1 375.1,454.0V457.0A4.0,4.0 0 0 1 371.1,461.0H232.0Z" class="s2"><title>08c · 8 in parallel: 6.0 Mbps</title></path>
+<text x="32.0" y="480.0" font-size="13" class="t1">cos</text>
+<text x="32.0" y="494.0" font-size="11" class="t2 mono">upos-sz-mirrorcos</text>
+<path d="M232.0,470.0H282.9A4.0,4.0 0 0 1 286.9,474.0V477.0A4.0,4.0 0 0 1 282.9,481.0H232.0Z" class="s1"><title>cos · 1 connection: 2.3 Mbps</title></path>
+<path d="M232.0,484.0H409.3A4.0,4.0 0 0 1 413.3,488.0V491.0A4.0,4.0 0 0 1 409.3,495.0H232.0Z" class="s2"><title>cos · 8 in parallel: 7.6 Mbps</title></path>
+<text x="32.0" y="514.0" font-size="13" class="t1">bd</text>
+<text x="32.0" y="528.0" font-size="11" class="t2 mono">upos-sz-mirrorbd</text>
+<path d="M232.0,504.0H337.7A4.0,4.0 0 0 1 341.7,508.0V511.0A4.0,4.0 0 0 1 337.7,515.0H232.0Z" class="s1"><title>bd · 1 connection: 4.6 Mbps</title></path>
+<path d="M232.0,518.0H836.4A4.0,4.0 0 0 1 840.4,522.0V525.0A4.0,4.0 0 0 1 836.4,529.0H232.0Z" class="s2"><title>bd · 8 in parallel: 25.5 Mbps</title></path>
+<text x="32.0" y="548.0" font-size="13" class="t1">estgoss</text>
+<text x="32.0" y="562.0" font-size="11" class="t2 mono">upos-sz-estgoss</text>
+<path d="M232.0,538.0H321.0A4.0,4.0 0 0 1 325.0,542.0V545.0A4.0,4.0 0 0 1 321.0,549.0H232.0Z" class="s1"><title>estgoss · 1 connection: 3.9 Mbps</title></path>
+<path d="M232.0,552.0H459.4A4.0,4.0 0 0 1 463.4,556.0V559.0A4.0,4.0 0 0 1 459.4,563.0H232.0Z" class="s2"><title>estgoss · 8 in parallel: 9.7 Mbps</title></path>
+<line x1="356.1" y1="136.0" x2="356.1" y2="569.0" class="thr" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="247.5" y="193.5" font-size="11" class="t2 halo num">0.4 timeout</text>
+<text x="254.7" y="207.5" font-size="11" class="t2 halo num">0.7</text>
+<text x="247.5" y="227.5" font-size="11" class="t2 halo num">0.4 timeout</text>
+<text x="259.5" y="241.5" font-size="11" class="t2 halo num">0.9</text>
+<text x="261.9" y="285.5" font-size="11" class="t2 halo num">1.0 timeout</text>
+<text x="316.7" y="299.5" font-size="11" class="t2 halo num">3.3</text>
+<text x="261.9" y="319.5" font-size="11" class="t2 halo num">1.0 timeout</text>
+<text x="345.4" y="333.5" font-size="11" class="t2 halo num">4.5</text>
+<text x="865.4" y="425.5" font-size="11" font-weight="600" class="t1 halo num">26.3</text>
+<text x="669.8" y="445.5" font-size="11" class="t2 halo num">18.1</text>
+<text x="846.4" y="527.5" font-size="11" font-weight="600" class="t1 halo num">25.5</text>
+<text x="362.1" y="150.0" font-size="11" font-weight="600" class="t2 halo">needed 5.2</text>
+<line x1="232.0" y1="138.0" x2="232.0" y2="569.0" class="base" stroke-width="1"/>
+<text x="232.0" y="585.0" font-size="11" text-anchor="middle" class="t2 num">0</text>
+<text x="351.3" y="585.0" font-size="11" text-anchor="middle" class="t2 num">5</text>
+<text x="470.6" y="585.0" font-size="11" text-anchor="middle" class="t2 num">10</text>
+<text x="589.9" y="585.0" font-size="11" text-anchor="middle" class="t2 num">15</text>
+<text x="709.1" y="585.0" font-size="11" text-anchor="middle" class="t2 num">20</text>
+<text x="828.4" y="585.0" font-size="11" text-anchor="middle" class="t2 num">25</text>
+<text x="900.0" y="585.0" font-size="11" text-anchor="end" class="t2">Mbps</text>
+<text x="32.0" y="613.0" font-size="12" class="t2">Mbps, longer is better. The native player only uses the primary and backup node Bilibili assigns, and never switches just because one is slow.</text>
+<text x="32.0" y="630.0" font-size="12" class="t2">Cold data, single samples. 8 parallel requests to one host are 8 streams on one HTTP/2 connection; numbers from different nodes do not add up.</text>
+<text x="32.0" y="647.0" font-size="12" class="t2">Full data: docs/en/02-why-cdn.md §3</text>
+</svg>

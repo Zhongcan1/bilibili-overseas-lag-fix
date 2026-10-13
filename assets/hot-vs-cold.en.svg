@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="468" viewBox="0 0 960 468" role="img" aria-labelledby="title desc" xml:lang="en" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, &quot;PingFang SC&quot;, &quot;Hiragino Sans GB&quot;, &quot;Microsoft YaHei&quot;, &quot;Noto Sans CJK SC&quot;, &quot;Noto Sans SC&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif"><title id="title">Same Akamai node: 63 Mbps on a hot video, 0.4–5.7 Mbps on cold ones</title><desc id="desc">Grouped bar chart: throughput of the Bilibili-assigned Akamai node on one connection versus the fastest mainland node with 8 parallel requests. Hot video (run 1, 480P): Akamai 63.1 Mbps, fastest mainland parallel ali 29.5. Cold videos: run 1 480P Akamai 3.6, hw 26.4; run 2 360P Akamai 5.7, hw 24.0; run 3 1080P60 Akamai 0.4 (timeout), hw 26.3. Netherlands, 2026-10-13.</desc><style>svg{font-family:system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", Roboto, "Helvetica Neue", Arial, sans-serif}.mono{font-family:ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, "Liberation Mono", Menlo, monospace}.num{font-variant-numeric:tabular-nums}.halo,.thalo{stroke-width:4px;stroke-linejoin:round;paint-order:stroke}.bg{fill:#fcfcfb;stroke:#e1e0d9}.tile{fill:#f3f2ee;stroke:#e1e0d9}.t1{fill:#0b0b0b}.t2{fill:#52514e}.grid{stroke:#e1e0d9}.base{stroke:#c3c2b7}.wash{fill:#efeee9}.s1{fill:#2a78d6}.s2{fill:#eb6834}.thr{stroke:#52514e}.thrf{fill:#52514e}.good{stroke:#0ca30c}.chip{fill:none;stroke:#c3c2b7}.halo{stroke:#fcfcfb}.thalo{stroke:#f3f2ee}@media (prefers-color-scheme:dark){.bg{fill:#1a1a19;stroke:#2c2c2a}.tile{fill:#222220;stroke:#2c2c2a}.t1{fill:#ffffff}.t2{fill:#c3c2b7}.grid{stroke:#2c2c2a}.base{stroke:#383835}.wash{fill:#232321}.s1{fill:#3987e5}.s2{fill:#d95926}.thr{stroke:#c3c2b7}.thrf{fill:#c3c2b7}.good{stroke:#0ca30c}.chip{fill:none;stroke:#383835}.halo{stroke:#1a1a19}.thalo{stroke:#222220}}</style><rect x="0.5" y="0.5" width="959" height="467" rx="14" class="bg" stroke-width="1"/>
+<text x="32.0" y="44.0" font-size="20" font-weight="600" class="t1">Same Akamai node: 63 Mbps on a hot video, 0.4–5.7 Mbps on cold ones</text>
+<text x="32.0" y="68.0" font-size="13" class="t2">Bilibili-assigned Akamai node (1 connection, as the native player fetches) vs the fastest mainland node of each run (8 in parallel)</text>
+<text x="32.0" y="86.0" font-size="13" class="t2">Netherlands · 2026-10-13 · 3 runs; on cold videos, “mainland + parallel” held steady at 24–26 Mbps</text>
+<rect x="32.0" y="109.0" width="14.0" height="10.0" rx="2" class="s1"/>
+<text x="54.0" y="118.0" font-size="12" class="t2">Assigned Akamai · 1 connection</text>
+<rect x="251.4" y="109.0" width="14.0" height="10.0" rx="2" class="s2"/>
+<text x="273.4" y="118.0" font-size="12" class="t2">Fastest mainland node · 8 in parallel</text>
+<line x1="327.4" y1="136.0" x2="327.4" y2="383.0" class="grid" stroke-width="1"/>
+<line x1="422.9" y1="136.0" x2="422.9" y2="383.0" class="grid" stroke-width="1"/>
+<line x1="518.3" y1="136.0" x2="518.3" y2="383.0" class="grid" stroke-width="1"/>
+<line x1="613.7" y1="136.0" x2="613.7" y2="383.0" class="grid" stroke-width="1"/>
+<line x1="709.1" y1="136.0" x2="709.1" y2="383.0" class="grid" stroke-width="1"/>
+<line x1="804.6" y1="136.0" x2="804.6" y2="383.0" class="grid" stroke-width="1"/>
+<text x="32.0" y="156.0" font-size="12" font-weight="600" class="t2">Hot video</text>
+<line x1="32.0" y1="212.0" x2="900.0" y2="212.0" class="grid" stroke-width="1"/>
+<text x="32.0" y="232.0" font-size="12" font-weight="600" class="t2">Cold videos</text>
+<text x="32.0" y="182.0" font-size="13" class="t1">Run 1 · 480P</text>
+<text x="32.0" y="198.0" font-size="11" class="t2">BV15KpR6TENe · logged out</text>
+<path d="M232.0,170.0H830.2A4.0,4.0 0 0 1 834.2,174.0V180.0A4.0,4.0 0 0 1 830.2,184.0H232.0Z" class="s1"><title>Run 1 · 480P · Akamai · 1 connection: 63.1 Mbps</title></path>
+<path d="M232.0,187.0H509.5A4.0,4.0 0 0 1 513.5,191.0V197.0A4.0,4.0 0 0 1 509.5,201.0H232.0Z" class="s2"><title>Run 1 · 480P · ali · 8 in parallel: 29.5 Mbps</title></path>
+<text x="840.2" y="181.0" font-size="12" font-weight="600" class="t1 halo num">63.1</text>
+<text x="519.5" y="198.0"><tspan font-size="12" font-weight="600" class="t1 num">29.5</tspan><tspan font-size="11" class="t2 mono">  ali</tspan></text>
+<text x="32.0" y="258.0" font-size="13" class="t1">Run 1 · 480P</text>
+<text x="32.0" y="274.0" font-size="11" class="t2">BV1xUpZ6NERA · logged out</text>
+<path d="M232.0,246.0H262.4A4.0,4.0 0 0 1 266.4,250.0V256.0A4.0,4.0 0 0 1 262.4,260.0H232.0Z" class="s1"><title>Run 1 · 480P · Akamai · 1 connection: 3.6 Mbps</title></path>
+<path d="M232.0,263.0H479.9A4.0,4.0 0 0 1 483.9,267.0V273.0A4.0,4.0 0 0 1 479.9,277.0H232.0Z" class="s2"><title>Run 1 · 480P · hw · 8 in parallel: 26.4 Mbps</title></path>
+<text x="272.4" y="257.0" font-size="12" font-weight="600" class="t1 halo num">3.6</text>
+<text x="489.9" y="274.0"><tspan font-size="12" font-weight="600" class="t1 num">26.4</tspan><tspan font-size="11" class="t2 mono">  hw</tspan></text>
+<text x="32.0" y="308.0" font-size="13" class="t1">Run 2 · 360P</text>
+<text x="32.0" y="324.0" font-size="11" class="t2">BV1EqYE6iEu5 · logged out</text>
+<path d="M232.0,296.0H282.4A4.0,4.0 0 0 1 286.4,300.0V306.0A4.0,4.0 0 0 1 282.4,310.0H232.0Z" class="s1"><title>Run 2 · 360P · Akamai · 1 connection: 5.7 Mbps</title></path>
+<path d="M232.0,313.0H457.0A4.0,4.0 0 0 1 461.0,317.0V323.0A4.0,4.0 0 0 1 457.0,327.0H232.0Z" class="s2"><title>Run 2 · 360P · hw · 8 in parallel: 24.0 Mbps</title></path>
+<text x="292.4" y="307.0" font-size="12" font-weight="600" class="t1 halo num">5.7</text>
+<text x="467.0" y="324.0"><tspan font-size="12" font-weight="600" class="t1 num">24.0</tspan><tspan font-size="11" class="t2 mono">  hw</tspan></text>
+<text x="32.0" y="358.0" font-size="13" class="t1">Run 3 · 1080P60</text>
+<text x="32.0" y="374.0" font-size="11" class="t2">BV1wqbT6AEbe · logged in</text>
+<path d="M232.0,346.0H232.0A3.8,3.8 0 0 1 235.8,349.8V356.2A3.8,3.8 0 0 1 232.0,360.0H232.0Z" class="s1"><title>Run 3 · 1080P60 · Akamai · 1 connection: 0.4 Mbps (timeout)</title></path>
+<path d="M232.0,363.0H479.0A4.0,4.0 0 0 1 483.0,367.0V373.0A4.0,4.0 0 0 1 479.0,377.0H232.0Z" class="s2"><title>Run 3 · 1080P60 · hw · 8 in parallel: 26.3 Mbps</title></path>
+<text x="241.8" y="357.0" font-size="12" font-weight="600" class="t1 halo num">0.4 timeout</text>
+<text x="489.0" y="374.0"><tspan font-size="12" font-weight="600" class="t1 num">26.3</tspan><tspan font-size="11" class="t2 mono">  hw</tspan></text>
+<line x1="232.0" y1="136.0" x2="232.0" y2="383.0" class="base" stroke-width="1"/>
+<text x="232.0" y="399.0" font-size="11" text-anchor="middle" class="t2 num">0</text>
+<text x="327.4" y="399.0" font-size="11" text-anchor="middle" class="t2 num">10</text>
+<text x="422.9" y="399.0" font-size="11" text-anchor="middle" class="t2 num">20</text>
+<text x="518.3" y="399.0" font-size="11" text-anchor="middle" class="t2 num">30</text>
+<text x="613.7" y="399.0" font-size="11" text-anchor="middle" class="t2 num">40</text>
+<text x="709.1" y="399.0" font-size="11" text-anchor="middle" class="t2 num">50</text>
+<text x="804.6" y="399.0" font-size="11" text-anchor="middle" class="t2 num">60</text>
+<text x="900.0" y="399.0" font-size="11" text-anchor="end" class="t2">Mbps</text>
+<text x="32.0" y="427.0" font-size="12" class="t2">On the hot video the assigned node beats every mainland node: the gain from speed-up scripts is concentrated on cold videos.</text>
+<text x="32.0" y="444.0" font-size="12" class="t2">Runs 1 and 2 logged out at low quality; run 3 logged in at 1080P60. Single samples. Data: docs/en/02-why-cdn.md §4–§5</text>
+</svg>
